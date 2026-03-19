@@ -8,52 +8,122 @@ const ToDoList = () => {
 	const [inputTarea, setInputTarea] = useState("")
 	const [listaTareas, setListaTareas] = useState([])
 
-	console.log(listaTareas)
+	// AGREGAR TAREA "POST"
+	// async function crearTarea(Enter) {
+	// 	if (Enter === "Enter" && inputTarea.trim() !== "") {
+
+	// 		const response = await fetch(`https://playground.4geeks.com/todo/todos/${USER}`, {
+	// 			method: 'POST',
+	// 			body: JSON.stringify({
+	// 				"label": inputTarea,
+	// 				"is_done": false
+	// 			}),
+	// 			headers: {
+	// 				'Content-Type': 'application/json'
+	// 			}
+	// 		});
+	// 		if (response.ok) {
+	// 			const data = await response.json();
+	// 			setInputTarea("")
+	// 			traerTarea()
+	// 			return data;
+	// 		} else {
+	// 			console.log('error: ', response.status, response.statusText);
+	// 			return { error: { status: response.status, statusText: response.statusText } };
+	// 		};
+
+	// 	}
+	// }
+
+	// AGREGAR TAREA "POST"
 	async function crearTarea(Enter) {
 		if (Enter === "Enter" && inputTarea.trim() !== "") {
 
-			const response = await fetch('https://playground.4geeks.com/todo/todos/erikaportes', {
-				method: 'POST',
-				body: JSON.stringify({
-					"label": inputTarea,
-					"is_done": false
-				}),  // la variable dataToSend puede ser un 'string' o un {objeto} que proviene de algún lugar más arriba en nuestra aplicación
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			});
-			if (response.ok) {
-				const data = await response.json();
-				setInputTarea("")
-				traerTarea()
-				return data;
-			} else {
-				console.log('error: ', response.status, response.statusText);
-				/* Realiza el tratamiento del error que devolvió el request HTTP */
-				return { error: { status: response.status, statusText: response.statusText } };
-			};
+			try {
+				const response = await fetch(`https://playground.4geeks.com/todo/todos/${USER}`, {
+					method: 'POST',
+					body: JSON.stringify({
+						label: inputTarea,
+						is_done: false
+					}),
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
 
+				if (!response.ok) {
+					throw new Error(`HTTP error: ${response.status}`);
+				}
+
+				const data = await response.json();
+
+				setInputTarea("");
+				traerTarea();
+
+				return data;
+
+			} catch (error) {
+				console.error("Error al crear tarea:", error);
+			}
 		}
 	}
 
+
+	// TRAER TAREA "GET"
+	// const traerTarea = async () => {
+	// 	const response = await fetch('https://playground.4geeks.com/todo/users/erikaportes');
+	// 	if (response.ok) {
+	// 		const data = await response.json();
+	// 		setListaTareas(data.todos)
+	// 		return data;
+	// 	} else {
+	// 		console.log('error: ', response.status, response.statusText);
+	// 		/* Realiza el tratamiento del error que devolvió el request HTTP */
+	// 		return { error: { status: response.status, statusText: response.statusText } };
+	// 	};
+	// };
+
+	// TRAER TAREA "GET"
 	const traerTarea = async () => {
-		const response = await fetch('https://playground.4geeks.com/todo/users/erikaportes');
-		if (response.ok) {
+		try {
+			const response = await fetch(`https://playground.4geeks.com/todo/users/${USER}`);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error: ${response.status}`);
+			}
+
 			const data = await response.json();
-			setListaTareas(data.todos)
+			setListaTareas(data.todos);
+
 			return data;
-		} else {
-			console.log('error: ', response.status, response.statusText);
-			/* Realiza el tratamiento del error que devolvió el request HTTP */
-			return { error: { status: response.status, statusText: response.statusText } };
-		};
+
+		} catch (error) {
+			console.error("Error al traer tareas:", error);
+		}
 	};
 
-	useEffect(() => { traerTarea() }, [])
 
-	function trash(indice) {
-		setListaTareas(listaTareas.filter((item, i) => indice != i))
-	}
+	// BORRAR TAREA "DELETE"
+	// function trash(indice) {
+	// 	setListaTareas(listaTareas.filter((item, i) => indice != i))
+	// }
+
+	// BORRAR TAREA "DELETE"
+	const eliminarTarea = async (id) => {
+		try {
+			await fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+				method: "DELETE"
+			});
+			traerTarea();
+		} catch (error) {
+			console.error("No se pudo borrar la tarea:", error);
+		}
+	};
+
+
+	useEffect(() => {
+		traerTarea()
+	}, [])
 
 	return (
 
@@ -73,10 +143,11 @@ const ToDoList = () => {
 						return (
 							<li
 								className="list-group-item d-flex justify-content-between align-items-center tarea-item"
-								key={tarea + indice} >
+								key={tarea.id} >
 								{tarea.label}
 								<i
-									onClick={() => trash(indice)}
+									// onClick={() => trash(indice)} o
+									onClick={() => eliminarTarea(tarea.id)}
 									className="fa-solid fa-trash-can trash-icon ms-auto">
 								</i>
 							</li>
