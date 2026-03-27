@@ -72,9 +72,9 @@ const ToDoList = () => {
 		}
 	};
 
+	// // BORRAR TODAS LAS TAREAS
 	const eliminarTodas = async () => {
 	try {
-		// Ejecuta DELETE para cada tarea
 		await Promise.all(
 			listaTareas.map(tarea =>
 				fetch(`https://playground.4geeks.com/todo/todos/${tarea.id}`, {
@@ -82,27 +82,12 @@ const ToDoList = () => {
 				})
 			)
 		);
-
-		// Refresca la lista
 		setListaTareas([]);
 
 	} catch (error) {
 		console.error("Error al eliminar todas las tareas:", error);
 	}
 };
-
-	// // BORRAR TODAS LAS TAREAS
-	// const eliminarTodo = async () => {
-	// 	try {
-	// 		const response = await fetch(API_URL, { method: "DELETE" });
-	// 		if (response.ok) {
-	// 			setListaTareas([]);
-	// 			crearUsuario();
-	// 		}
-	// 	} catch (error) {
-	// 		console.error("Error al eliminar todas las tareas:", error);
-	// 	}
-	// };
 
 	useEffect(() => {
 		traerTarea()
@@ -148,7 +133,7 @@ const ToDoList = () => {
 				<div className="footer-container d-flex justify-content-between align-items-center mt-3 p-2 border-top">
 					<small className="text-muted">{listaTareas.length} items left</small>
 
-					{/* BOTÓN PARA ELIMINAR TODO */}
+					{/* BOTÓN PARA ELIMINAR TODAS LAS TAREAS */}
 					{listaTareas.length > 0 && (
 						<button
 							className="btn btn-danger btn-sm"
